@@ -10,10 +10,11 @@ def checkStatus(uId,cursor): #return text based on condition of customer (for cu
     cursor.execute("SELECT id, nasi, topping, saus from QUEUE where finish=false and uid ="+uId+";")
     orders = cursor.fetchall();
     cursor.execute("select id from queue where finish=false limit 1;")
-    noOrderan = cursor.fetchone()[0]
+    if cursor.fetchone():
+        noOrderan = cursor.fetchone()[0]
     cursor.execute("select count(case finish when false then 1 else null end) from queue")
-    totalAntrian = cursor.fetchone()[0]
-    totalAntrian = int(totalAntrian)
+    if cursor.fetchone():
+        totalAntrian = int(cursor.fetchone()[0])
     if not orders: #orders is empty and the customer hasnt put on order yet
         text = "No orderan yang sedang dikerjakan: " + str(noOrderan) + "\n"
         text = text + "Total antrian yang ada: " + str(totalAntrian) + "\n"
