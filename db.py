@@ -77,6 +77,11 @@ def tambahPesanan(idNum, uId, nasi, topping, saus, cursor): #add orders into que
 	query = query + "VALUES ("+str(idNum)+","+uId+","+nasi+","+topping+","+saus+",false);"
 	cursor.execute(query)
 
+def selesaiPesanan(id,cursor):
+    id = str(id)
+    query = "UPDATE QUEUE SET FINISH = true WHERE id = '" + id + "';"
+    cursor.execute(query)
+
 def updateSaldo(saldo, uid, cursor): #function to update saldo
 	cursor.execute("SELECT saldo from CUSTOMERS WHERE uid ='"+uid+"';")
 	saldobaru = saldo + cursor.fetchone()[0]
