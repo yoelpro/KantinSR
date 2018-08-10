@@ -115,6 +115,6 @@ def connect(): #function to provide connection
 def minId(cursor):
     cursor.execute("select id from queue where finish = false;")
     listId = cursor.fetchall()
-    listId.sort()
+    listId.sort(key=itemgetter(0))
     print(listId)
     return int(listId[0][0])
