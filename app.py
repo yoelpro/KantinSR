@@ -121,9 +121,9 @@ def followReply(event):
     exists = cur.fetchone()[0]
     if exists:
         saldo = db.checkSaldo(uId,cur)
-        pm(uId,'Akun anda sudah pernah dibuat! \n Sisa saldo: Rp '+ str(saldo))
+        pm(uId,'Akun anda sudah pernah dibuat! \nSisa saldo: Rp '+ str(saldo))
     else:
-        pm(uId,'Akun anda telah dibuat secara otomatis. \n Saldo anda sekarang: Rp 0')
+        pm(uId,'Akun anda telah dibuat secara otomatis. \nSaldo anda sekarang: Rp 0.0')
         row = db.countRow('CUSTOMERS',cur)
         db.insertDataCustomer(row+1,uId,0,cur)
     conn.commit()
