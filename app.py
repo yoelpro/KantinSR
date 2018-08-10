@@ -122,7 +122,7 @@ def replyText(event):
     else:
         if '/ok' in input:
             print True
-        else
+        else:
             print False
         reply(event,event.message.text)
 
