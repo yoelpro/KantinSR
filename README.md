@@ -5,10 +5,8 @@ Mempermudah pemesanan makanan di kantin SR
 ## Getting started
 
 ```
-$ export LINE_CHANNEL_SECRET=YOUR_LINE_CHANNEL_SECRET
-$ export LINE_CHANNEL_ACCESS_TOKEN=YOUR_LINE_CHANNEL_ACCESS_TOKEN
-
-$ pip install -r requirements.txt
+QR Code to line bot:
+![QR](statics/QR.png)
 ```
 
 Run WebhookParser sample
