@@ -8,7 +8,7 @@ from operator import itemgetter
 def checkStatus(uId,cursor): #return text based on condition of customer (for customer)
     uId = "'"+uId+"'" 
     cursor.execute("SELECT id, nasi, topping, saus from QUEUE where finish=false and uid ="+uId+";")
-    orders = cursor.fetchall();
+    orders = cursor.fetchall()
     cursor.execute("select id from queue where finish=false limit 1;")
     noOrderan = cursor.fetchone()
     if noOrderan is not None:
