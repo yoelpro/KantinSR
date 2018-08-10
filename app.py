@@ -57,8 +57,6 @@ app = Flask(__name__)
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
 channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
 admin = os.getenv('ADMIN', None)
-conn = db.connect()
-cur = conn.cursor()
 if channel_secret is None:
     print('Specify LINE_CHANNEL_SECRET as environment variable.')
     sys.exit(1)
@@ -103,7 +101,7 @@ def replyText(event):
             arguments_string = ''
 
         # set database connection
-        # conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
         if command == 'pesan':
             order_memo = BOT_PREFIX + command + ' ' + arguments_string
