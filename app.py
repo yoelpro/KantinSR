@@ -16,7 +16,7 @@ import sys
 import psycopg2
 import db
 from argparse import ArgumentParser
-from flask import Flask, request, abort
+from flask import Flask, request, abort, render_template
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -67,6 +67,9 @@ if channel_access_token is None:
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 
+@app.route("/", methods=['POST'])
+def homepage(name=None):
+    return render_template('homepage.html', name=name)
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -257,7 +260,7 @@ def replyText(event):
 
         elif command == 'isi':
             if ADMIN.count(event.source.user_id) == 1:
-                db.updateSaldo(arguments_list[0], arguments_list[1], conn.cursor())
+                db.updateSaldo(int(arguments_list[0]), arguments_list[1], conn.cursor())
             else:
                 buttons_template = ButtonsTemplate(
                     title='My buttons sample', text='Hello, my buttons', actions=[
