@@ -126,6 +126,8 @@ def followReply(event):
         pm(uId,'Akun anda telah dibuat secara otomatis. \n Saldo anda sekarang: Rp 0')
         row = db.countRow('CUSTOMERS',cur)
         db.insertDataCustomer(row+1,uId,0,cur)
+    conn.commit()
+    conn.close()
 
 
 # shortening
