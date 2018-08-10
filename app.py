@@ -39,7 +39,7 @@ ID_PENJUAL = os.getenv('ID_PENJUAL', None)
 # site url
 base_url = os.getenv('BASE_URL', None)
 
-statics_url = base_url + '/statics'
+statics_url = base_url + '/static'
 
 # database url
 DATABASE_URL = os.getenv('DATABASE_URL', None)
@@ -95,7 +95,7 @@ def replyText(event):
         # seperate message contents as command and arguments
         message_body = event.message.text.strip()[1:].split()
         command = message_body[0]
-        if(len(message_body) >= 2):
+        if(len(message_body) >= 2): #kalau ada 2 kata atau lebih
             arguments_list = message_body[1:]
             arguments_string = ' '.join(arguments_list)
         else:
@@ -103,7 +103,7 @@ def replyText(event):
             arguments_string = ''
 
         # set database connection
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+        # conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
         if command == 'pesan':
             order_memo = BOT_PREFIX + command + ' ' + arguments_string
