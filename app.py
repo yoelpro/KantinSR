@@ -121,9 +121,9 @@ def replyText(event):
         conn.close()
     else:
         if '/ok' in input:
-            print True
+            print (True)
         else:
-            print False
+            print (False)
         reply(event,event.message.text)
 
 @handler.add(FollowEvent)
