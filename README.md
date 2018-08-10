@@ -2,9 +2,7 @@
 
 Mempermudah pemesanan makanan di kantin SR
 
-![Main Screen](static/main.jpg =348x600)
-
-## Getting started
+<img src="static/main.jpg" width="348" height="600" />`
 
 QR Code to line bot:
 
