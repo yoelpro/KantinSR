@@ -236,15 +236,22 @@ def replyText(event):
                     reply(event, 'Perintah hanya dapat dilakukan melalui personal chat.')
 
         elif command == 'ok':
-                if ADMIN.count(event.source.user_id) == 1:
+            if ADMIN.count(event.source.user_id) == 1:
+                if db.unfinishedExist():
                     if event.source.type == 'user':
-                        for x in arguments_list:
-                            db.selesaiPesanan(int(x), cur)
+                        if arguments_list is None:#kalau dia cuma /ok
+                            db.selesaiPesanan(db.minId(),cur)
+                        else:
+                            for x in arguments_list:
+                                db.selesaiPesanan(int(x), cur)
+                        
+                        texts = db.listOrders(cur)
+                        for text in texts:
+                            pm(ADMIN, text)
                     else:
                         reply(event, 'Perintah hanya dapat dilakukan melalui personal chat.')
-                texts = db.listOrders(cur)
-                for text in texts:
-                    pm(ADMIN, text)
+                else:
+                    reply(event,'Semua pesanan telah terselesaikan')
         conn.commit()
     # input = event.message.text
     # if input == '/profile':
