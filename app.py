@@ -237,10 +237,11 @@ def replyText(event):
 
         elif command == 'ok':
             if ADMIN.count(event.source.user_id) == 1:
+                print(db.unfinishedExist(cur))
+                print(1,db.minId(cur))
                 if db.unfinishedExist(cur):
                     if event.source.type == 'user':
-                        if arguments_list is None:#kalau dia cuma /ok
-                            print(1,db.minId(cur))
+                        if not arguments_list:#kalau dia cuma /ok
                             db.selesaiPesanan(db.minId(cur),cur)
                         else:
                             for x in arguments_list:
