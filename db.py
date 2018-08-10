@@ -61,7 +61,7 @@ def listOrders(cursor): #return list of orders (for seller)
         texts[i] = "Urutan = " + rows[i][0] + '\n'
         texts[i] = texts[i] + "Nasi = " + rows[i][2] + "; Topping = " + rows[i][3] + '\n'
         texts[i] = texts[i] + "Saus = " + rows[i][4]
-    texts.sort(key=lambda x: float(x[0]),reverse=True)
+    # texts.sort(key=lambda x: float(x[0]),reverse=True)
     return texts
 
 def checkSaldo(uid,cursor): #return integer saldo of certain uid
