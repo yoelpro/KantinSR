@@ -116,4 +116,5 @@ def minId(cursor):
     cursor.execute("select id from queue where finish = false;")
     listId = cursor.fetchall()
     listId.sort()
+    print(listId)
     return int(listId[0][0])
