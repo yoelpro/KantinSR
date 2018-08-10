@@ -88,6 +88,9 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def replyText(event):
+    # set database connection
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    cur = conn.cursor()
     # check bot prefix
     if event.message.text.startswith(BOT_PREFIX):
         # seperate message contents as command and arguments
@@ -99,10 +102,7 @@ def replyText(event):
         else:
             arguments_list = []
             arguments_string = ''
-
-        # set database connection
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-        cur = conn.cursor()
+        
         if command == 'pesan':
             order_memo = BOT_PREFIX + command + ' ' + arguments_string
             if len(arguments_list) == 0: #pilih nasi
@@ -237,7 +237,7 @@ def replyText(event):
 
         elif command == 'ok':
             if ADMIN.count(event.source.user_id) == 1:
-                if db.unfinishedExist():
+                if db.unfinishedExist(cur):
                     if event.source.type == 'user':
                         if arguments_list is None:#kalau dia cuma /ok
                             db.selesaiPesanan(db.minId(),cur)
