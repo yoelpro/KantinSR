@@ -184,7 +184,7 @@ def replyText(event):
                 else:
                     order_mistake(event)
 
-            elif (len(arguments_list) == 6) and (arguments_list[-1] != 'selesai'): #selesai memesan semua saus
+            elif (len(arguments_list) == 6) and (arguments_list[-1] != 'selesai'): #konfirmasi order
                 if validate_order(arguments_list, -1):
                     summary_button = ButtonsTemplate(
                         text=('Apakah pesanan sudah benar?' +
@@ -199,14 +199,14 @@ def replyText(event):
 
                     line_bot_api.reply_message(event.reply_token, order_summary)
 
-            elif len(arguments_list) >= 3 and arguments_list[-1] == 'selesai': #selesai memesan tpi tidak perlu semua saus
+            elif len(arguments_list) >= 3 and arguments_list[-1] == 'selesai': #selesai memesan
                 if validate_order(arguments_list, -2):
                     db.tambahPesanan(
                         db.countRow('QUEUE', conn.cursor()) + 1,
                         event.source.user_id,
-                        arguments_list[0],
-                        arguments_list[1],
-                        ', '.join(arguments_list[2:]),
+                        arguments_list[0], #nasi
+                        arguments_list[1], #topping
+                        ', '.join(arguments_list[2:]), #saus
                         cur
                         )
                     conn.commit()
@@ -284,14 +284,14 @@ def replyText(event):
     #         pm(profileId, text)
     #     conn.close()
     #     print('Database connection closed.')
-        
+
 @handler.add(FollowEvent)
 def followReply(event):
     uId = event.source.user_id
     uIdText = "'" + uId + "'"
-    # conn = db.connect()
+    conn = db.connect()
     print('Successfully connected')
-    # cur = conn.cursor()
+    cur = conn.cursor()
     cur.execute("SELECT EXISTS (SELECT 1 FROM CUSTOMERS WHERE uid = " + uIdText +");")
     exists = cur.fetchone()[0]
     if exists:
