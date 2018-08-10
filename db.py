@@ -75,9 +75,9 @@ def countRow(tableName,cursor): # return integer of table row
 	cursor.execute(command)
 	return cursor.fetchone()[0]
 
-def tableExist(tableName,cursor): # return boolean whether table exist or not
-	cursor.execute("select exists(select * from information_schema.tables where table_name=%s)", (tableName,))
-	return cursor.fetchone()[0]
+def unfinishedExist(cursor): # return boolean whether table exist or not
+	cursor.execute("SELECT EXISTS (SELECT 1 FROM QUEUE WHERE finish = false")
+    return cursor.fetchone()[0]
 
 def tambahPesanan(idNum, uId, nasi, topping, saus, cursor): #add orders into queue
 	uId = "'"+uId+"'"
@@ -112,4 +112,8 @@ def connect(): #function to provide connection
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     return conn
         
-    
+def minId(cursor):
+    cursor.execute("select id from queue where finish = false;")
+    listId = cursor.fetchall()
+    listId.sort()
+    return listId[0]
