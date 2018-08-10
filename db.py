@@ -76,8 +76,9 @@ def countRow(tableName,cursor): # return integer of table row
 	return cursor.fetchone()[0]
 
 def unfinishedExist(cursor): # return boolean whether table exist or not
-	cursor.execute("SELECT EXISTS (SELECT 1 FROM QUEUE WHERE finish = false")
-    return cursor.fetchone()[0]
+    cursor.execute("SELECT EXISTS (SELECT 1 FROM QUEUE WHERE finish = false);")
+    min = cursor.fetchone()[0]
+    return min
 
 def tambahPesanan(idNum, uId, nasi, topping, saus, cursor): #add orders into queue
 	uId = "'"+uId+"'"
