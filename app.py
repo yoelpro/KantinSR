@@ -37,6 +37,8 @@ app = Flask(__name__)
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
 channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
 admin = os.getenv('ADMIN', None)
+conn = db.connect()
+cur = conn.cursor()
 if channel_secret is None:
     print('Specify LINE_CHANNEL_SECRET as environment variable.')
     sys.exit(1)
@@ -88,7 +90,7 @@ def replyText(event):
     elif input == '/status':
         profile = line_bot_api.get_profile(event.source.user_id)
         profileId = profile.user_id
-        conn = db.connect() #setup database connection
+         #setup database connection
         print('Successfully connected')
         cur = conn.cursor() #create cursor
         text = db.checkStatus(profileId,cur)
@@ -107,6 +109,7 @@ def replyText(event):
             pm(profileId, text)
         conn.close()
         print('Database connection closed.')
+
     elif '/ok' in input:    
         query = input.split(' ')
         nomorPesanan = int(query[1])
@@ -120,6 +123,7 @@ def replyText(event):
             pm(admin, text)
         conn.commit()
         conn.close()
+
     else:
         if '/ok' in input:
             print (True)
@@ -131,9 +135,9 @@ def replyText(event):
 def followReply(event):
     uId = event.source.user_id
     uIdText = "'"+uId+"'"
-    conn = db.connect()
+    # conn = db.connect()
     print('Successfully connected')
-    cur = conn.cursor()
+    # cur = conn.cursor()
     cur.execute("SELECT EXISTS (SELECT 1 FROM CUSTOMERS WHERE uid = " + uIdText +");")
     exists = cur.fetchone()[0]
     if exists:
