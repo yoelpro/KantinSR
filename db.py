@@ -29,7 +29,7 @@ def checkStatus(uId,cursor): #return text based on condition of customer (for cu
         text = text + "Total antrian yang ada: " + str(totalAntrian) + "\n"
         text = text + "Perkiraan waktu antrian = " + str(totalAntrian*1.5) + " Menit" #asumsi 1 pesanan memakai 1.5 menit
     else: #customer has some orders
-        orders.sort(key=lambda x: int(x[0]), reverse=True)
+        orders.sort(key=int(itemgetter(0)), reverse=True)
         first = True
         print(orders)
         for order in orders:#text construction
@@ -55,13 +55,13 @@ def checkStatus(uId,cursor): #return text based on condition of customer (for cu
 def listOrders(cursor): #return list of orders (for seller)
     cursor.execute("SELECT id, uid, nasi, topping, saus from QUEUE where finish=false")
     rows = cursor.fetchall()
-    rows.sort(key=lambda x: int(x[0]),reverse=True)
+    rows.sort(key=int(itemgetter(0)),reverse=True)
     texts = list(range(len(rows)))
     for i in range(0,len(rows)):
         texts[i] = "Urutan = " + rows[i][0] + '\n'
         texts[i] = texts[i] + "Nasi = " + rows[i][2] + "; Topping = " + rows[i][3] + '\n'
         texts[i] = texts[i] + "Saus = " + rows[i][4]
-    texts.sort(key=lambda x: int(x[0]),reverse=True)
+    texts.sort(key=int(itemgetter(0)),reverse=True)
     return texts
 
 def checkSaldo(uid,cursor): #return integer saldo of certain uid
@@ -116,6 +116,6 @@ def minId(cursor):
     cursor.execute("select id from queue where finish = false;")
     listId = cursor.fetchall()
     print(listId)
-    listId.sort(key=lambda x: int(x[0]))
+    listId.sort(key=int(itemgetter(0)))
     print(listId)
     return int(listId[0][0])
