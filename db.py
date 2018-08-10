@@ -2,7 +2,6 @@ import psycopg2
 import subprocess
 from configparser import ConfigParser
 import os
-import psycopg2
 from operator import itemgetter
 
 def checkStatus(uId,cursor): #return text based on condition of customer (for customer)
