@@ -117,9 +117,9 @@ def followReply(event):
     conn = db.connect()
     print('Successfully connected')
     cur = conn.cursor()
-    cur.execute("SELECT EXIST (SELECT 1 FROM CUSTOMERS WHERE uid = " + uIdText +");")
-    exist = cur.fetchone()[0]
-    if exist:
+    cur.execute("SELECT EXISTS (SELECT 1 FROM CUSTOMERS WHERE uid = " + uIdText +");")
+    exists = cur.fetchone()[0]
+    if exists:
         saldo = db.checkSaldo(uId,cur)
         pm(uId,'Akun anda sudah pernah dibuat! \n Sisa saldo: Rp '+ str(saldo))
     else:
