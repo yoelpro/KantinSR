@@ -6,4 +6,4 @@ Mempermudah pemesanan makanan di kantin SR
 
 QR Code to line bot:
 
-![QR](statics/QR.png)
+![QR](static/QR.png)
