@@ -1,4 +1,4 @@
-line-bot-sdk
-flask
+Flask==1.0.2
 gunicorn==19.9.0
-psycopg2
+line-bot-sdk==1.7.2
+psycopg2==2.7.5
