@@ -113,7 +113,7 @@ def replyText(event):
 @handler.add(FollowEvent)
 def followReply(event):
     uId = event.source.user_id
-    uIdText = "'"+uid+"'"
+    uIdText = "'"+uId+"'"
     conn = db.connect()
     print('Successfully connected')
     cur = conn.cursor()
