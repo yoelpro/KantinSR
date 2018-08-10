@@ -36,6 +36,7 @@ app = Flask(__name__)
 # get channel_secret and channel_access_token from your environment variable
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
 channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
+admin = os.getenv('ADMIN', None)
 if channel_secret is None:
     print('Specify LINE_CHANNEL_SECRET as environment variable.')
     sys.exit(1)
@@ -106,7 +107,18 @@ def replyText(event):
             pm(profileId, text)
         conn.close()
         print('Database connection closed.')
-
+    elif '/ok' in input:
+        query = input.split(' ')
+        nomorPesanan = int(query[1])
+        conn = db.connect()
+        print('Successfully connected')
+        cur = conn.cursor()
+        db.selesaiPesanan(nomorPesanan,cur)
+        #listing
+        texts = db.listOrders(cur)
+        for text in texts:
+            pm(admin, text)
+        conn.close()
     else:
         reply(event,event.message.text)
 
@@ -126,6 +138,7 @@ def followReply(event):
         pm(uId,'Akun anda telah dibuat secara otomatis. \nSaldo anda sekarang: Rp 0.0')
         row = db.countRow('CUSTOMERS',cur)
         db.insertDataCustomer(row+1,uId,0,cur)
+    pm(uId,'Silahkan kunjungi stand nasjep jika ingin mengisi saldo')
     conn.commit()
     conn.close()
 
