@@ -67,7 +67,7 @@ if channel_access_token is None:
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 
-@app.route("/", methods=['POST'])
+@app.route('/<name>')
 def homepage(name=None):
     return render_template('homepage.html', name=name)
 
