@@ -110,19 +110,23 @@ def replyText(event):
     else:
         reply(event,event.message.text)
 
-@handler.add(MessageEvent, message=AudioMessage)
-def message_text(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text='This is an audio file!')
-    )
+@handler.add(FollowEvent)
+def followReply(event):
+    uId = event.source.user_id
+    uIdText = "'"+uid+"'"
+    conn = db.connect()
+    print('Successfully connected')
+    cur = conn.cursor()
+    cur.execute("SELECT EXIST (SELECT 1 FROM CUSTOMERS WHERE uid = " + uIdText +");")
+    exist = cur.fetchone()[0]
+    if exist:
+        saldo = db.checkSaldo(uId,cur)
+        pm(uId,'Akun anda sudah pernah dibuat! \n Sisa saldo: Rp '+ str(saldo))
+    else:
+        pm(uId,'Akun anda telah dibuat secara otomatis. \n Saldo anda sekarang: Rp 0')
+        row = db.countRow('CUSTOMERS',cur)
+        db.insertDataCustomer(row+1,uId,0,cur)
 
-@handler.add(MessageEvent, message=ImageMessage)
-def message_text(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text='This is an image file!')
-    )
 
 # shortening
 def reply(event, isi): #reply message
