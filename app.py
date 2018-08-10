@@ -32,46 +32,6 @@ from linebot.models import (
 )
 
 app = Flask(__name__)
-# Competitive programming schedule return
-def gmt7now():
-    utc = datetime.datetime.utcnow()
-    return (utc + datetime.timedelta(hours=7))
-
-def gmt7oneweek():
-    return gmt7now() + datetime.timedelta(days=7)
-
-def urlString():
-    key ={
-    'limit': '10',
-    'start__gte' : gmt7now().strftime('%Y-%m-%d') ,
-    'start__lte' : gmt7oneweek().strftime('%Y-%m-%d'),
-    'order_by' : 'start',
-    'format' : 'json',
-    'username' : 'yoelpro',
-    'api_key' : 'f14376d9dfa81307b4c75455519cab7b436f602a'}
-    conUrl = 'https://clist.by/api/v1/contest/?'
-    i = 1
-    for k,v in key.items():
-        if i == 1:
-            conUrl = conUrl + k + '=' + v
-            i+=1
-        else:
-            conUrl = conUrl + '&' + k + '=' + v
-    return conUrl
-
-def cpData():
-    response = requests.get(urlString())
-    dataJson = json.loads(response.text)
-    dataText = ''
-    for object in dataJson["objects"]:
-        date_object = datetime.datetime.strptime(object["start"], '%Y-%m-%dT%H:%M:%S')
-        date_object = date_object + datetime.timedelta(hours=7)
-        waktu = date_object.strftime('%a, %d-%b-%Y %H:%M WIB')
-        dataText = dataText + (object["event"]+". Start:"+waktu+". Link:"+object["href"]+'\n')
-    return dataText
-
-
-
 
 # get channel_secret and channel_access_token from your environment variable
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
@@ -109,12 +69,7 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def replyText(event):
     input = event.message.text
-    if event.message.text == '/check':
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=cpData()))
-
-    elif event.message.text == '/profile':
+    if input == '/profile':
         profile = line_bot_api.get_profile(event.source.user_id)
         profileName = profile.display_name
         profileId = profile.user_id
