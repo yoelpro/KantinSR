@@ -238,7 +238,7 @@ def replyText(event):
         elif command == 'ok':
             if ADMIN.count(event.source.user_id) == 1:
                 print(db.unfinishedExist(cur))
-                print(1,db.minId(cur))
+                # print(1,db.minId(cur))
                 if db.unfinishedExist(cur):
                     if event.source.type == 'user':
                         if not arguments_list:#kalau dia cuma /ok
