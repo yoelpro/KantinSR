@@ -107,7 +107,7 @@ def replyText(event):
             pm(profileId, text)
         conn.close()
         print('Database connection closed.')
-    elif '/ok' in input:
+    elif '/ok' in input:    
         query = input.split(' ')
         nomorPesanan = int(query[1])
         conn = db.connect()
@@ -120,6 +120,10 @@ def replyText(event):
             pm(admin, text)
         conn.close()
     else:
+        if '/ok' in input:
+            print True
+        else
+            print False
         reply(event,event.message.text)
 
 @handler.add(FollowEvent)
