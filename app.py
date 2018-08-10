@@ -254,45 +254,23 @@ def replyText(event):
                         reply(event, 'Perintah hanya dapat dilakukan melalui personal chat.')
                 else:
                     reply(event,'Semua pesanan telah terselesaikan')
+
+        elif command == 'isi':
+            if ADMIN.count(event.source.user_id) == 1:
+                db.updateSaldo(arguments_list[0], arguments_list[1], conn.cursor())
+            else:
+                buttons_template = ButtonsTemplate(
+                    title='My buttons sample', text='Hello, my buttons', actions=[
+                        MessageAction(label='isi saldo ' + line_bot_api.get_profile(event.source.user_id).display_name,
+                            text=event.message.text + ' ' + event.source.user_id)
+                    ])
+                this_button = TemplateSendMessage(
+                    alt_text='Buttons alt text', template=buttons_template)
+                
+                line_bot_api.push_message(ADMIN, this_button)
+            
         conn.commit()
-    # input = event.message.text
-    # if input == '/profile':
-    #     profile = line_bot_api.get_profile(event.source.user_id)
-    #     profileName = profile.display_name
-    #     profileId = profile.user_id
-    #     profileStatus = profile.status_message
-    #     profileData = 'Nama: ' + profileName + '\n'
-    #     profileData = profileData + 'Id: ' + profileId + '\n'
-    #     profileData = profileData + 'Status: ' + profileStatus
-    #     line_bot_api.reply_message(
-    #         event.reply_token,
-    #         TextSendMessage(text=profileData))
 
-    # elif input == '/send':
-    #     pm('Ufda14dbdecc124e76f3b491104bbcb43','Ada yang mau pesen')
-
-    # elif input == '/status':
-    #     profile = line_bot_api.get_profile(event.source.user_id)
-    #     profileId = profile.user_id
-    #      #setup database connection
-    #     print('Successfully connected')
-    #     cur = cur #create cursor
-    #     text = db.checkStatus(profileId,cur)
-    #     pm(profileId, text) #push message text
-    #     conn.close() #close connection
-    #     print('Database connection closed.')
-
-    # elif input == '/jlhpesan':
-    #     profile = line_bot_api.get_profile(event.source.user_id)
-    #     profileId = profile.user_id
-    #     conn = db.connect()
-    #     print('Successfully connected')
-    #     cur = conn.cursor()
-    #     texts = db.listOrders(cur)
-    #     for text in texts:
-    #         pm(profileId, text)
-    #     conn.close()
-    #     print('Database connection closed.')
 
 @handler.add(FollowEvent)
 def followReply(event):
