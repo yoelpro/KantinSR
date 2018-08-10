@@ -240,7 +240,8 @@ def replyText(event):
                 if db.unfinishedExist(cur):
                     if event.source.type == 'user':
                         if arguments_list is None:#kalau dia cuma /ok
-                            db.selesaiPesanan(db.minId(),cur)
+                            print(1,db.minId(cur))
+                            db.selesaiPesanan(db.minId(cur),cur)
                         else:
                             for x in arguments_list:
                                 db.selesaiPesanan(int(x), cur)
