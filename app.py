@@ -118,6 +118,7 @@ def replyText(event):
         texts = db.listOrders(cur)
         for text in texts:
             pm(admin, text)
+        conn.commit()
         conn.close()
     else:
         if '/ok' in input:
