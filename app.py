@@ -16,8 +16,8 @@ import sys
 import psycopg2
 import db
 from argparse import ArgumentParser
-
 from flask import Flask, request, abort
+
 from linebot import (
     LineBotApi, WebhookHandler
 )
@@ -33,8 +33,6 @@ from linebot.models import (
     ImageCarouselColumn, CarouselTemplate, CarouselColumn, PostbackEvent,
     FollowEvent
 )
-
-ID_PENJUAL = os.getenv('ID_PENJUAL', None)
 
 # site url
 base_url = os.getenv('BASE_URL', None)
@@ -53,10 +51,12 @@ TOPPING_TYPE = [x.strip() for x in os.getenv('TOPPING_TYPE', '').split(';')]
 SAUCE_TYPE = [x.strip() for x in os.getenv('SAUCE_TYPE', '').split(';')]
 app = Flask(__name__)
 
+# admin uid
+ADMIN = os.getenv('ADMIN', None)
 # get channel_secret and channel_access_token from your environment variable
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
 channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
-admin = os.getenv('ADMIN', None)
+
 if channel_secret is None:
     print('Specify LINE_CHANNEL_SECRET as environment variable.')
     sys.exit(1)
@@ -102,10 +102,10 @@ def replyText(event):
 
         # set database connection
         conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-
+        cur = conn.cursor()
         if command == 'pesan':
             order_memo = BOT_PREFIX + command + ' ' + arguments_string
-            if len(arguments_list) == 0:
+            if len(arguments_list) == 0: #pilih nasi
                 pilihan_menu = ImageCarouselTemplate(columns=[
                     ImageCarouselColumn(
                         image_url=statics_url + '/nasi_putih.jpg',
@@ -121,7 +121,7 @@ def replyText(event):
                 
                 line_bot_api.reply_message(event.reply_token, menu_pesan)
             
-            elif len(arguments_list) == 1:
+            elif len(arguments_list) == 1: #pilih topping
                 if RICE_TYPE.count(arguments_list[0]) == 1:
                     pilihan_menu = ImageCarouselTemplate(columns=[
                         ImageCarouselColumn(
@@ -145,7 +145,7 @@ def replyText(event):
                 else:
                     order_mistake(event)
 
-            elif 2 <= len(arguments_list) <= 5 and arguments_list[-1] != 'selesai':
+            elif 2 <= len(arguments_list) <= 5 and arguments_list[-1] != 'selesai': #sedang milih saus
                 if validate_order(arguments_list, -1):
                     sauce_template = ImageCarouselTemplate(columns=[
                         ImageCarouselColumn(
@@ -184,7 +184,7 @@ def replyText(event):
                 else:
                     order_mistake(event)
 
-            elif (len(arguments_list) == 6) and (arguments_list[-1] != 'selesai'):
+            elif (len(arguments_list) == 6) and (arguments_list[-1] != 'selesai'): #selesai memesan semua saus
                 if validate_order(arguments_list, -1):
                     summary_button = ButtonsTemplate(
                         text=('Apakah pesanan sudah benar?' +
@@ -199,18 +199,18 @@ def replyText(event):
 
                     line_bot_api.reply_message(event.reply_token, order_summary)
 
-            elif len(arguments_list) >= 3 and arguments_list[-1] == 'selesai':
+            elif len(arguments_list) >= 3 and arguments_list[-1] == 'selesai': #selesai memesan tpi tidak perlu semua saus
                 if validate_order(arguments_list, -2):
                     db.tambahPesanan(
                         db.countRow('QUEUE', conn.cursor()) + 1,
-                        event.source.userId,
+                        event.source.user_id,
                         arguments_list[0],
                         arguments_list[1],
                         ', '.join(arguments_list[2:]),
-                        conn.cursor()
+                        cur
                         )
                     conn.commit()
-                    reply_text(event, 'Pesanan sudah dikirim!')
+                    reply(event, 'Pesanan sudah dikirim!')
 
                 else:
                     order_mistake(event)
@@ -221,89 +221,70 @@ def replyText(event):
         elif command == 'cek':
             if arguments_list[0] == 'saldo':
                 if event.source.type == 'user':
-                    saldo = db.checkSaldo(event.source.userId, conn.cursor())
-                    reply_text(event, 'Saldo and sekarang: ' + str(saldo))
+                    saldo = db.checkSaldo(event.source.user_id, cur)
+                    reply(event, 'Saldo anda sekarang: ' + str(saldo))
 
                 else:
-                    reply_text(event, 'Perintah hanya dapat dilakukan melalui personal chat.')
+                    reply(event, 'Perintah hanya dapat dilakukan melalui personal chat.')
                 
             elif arguments_list[0] == 'antrian':
                 if event.source.type == 'user':
-                    response = db.checkStatus(event.source.userId, conn.cursor())
-                    reply_text(event, response)
+                    response = db.checkStatus(event.source.user_id, cur)
+                    reply(event, response)
 
                 else:
-                    reply_text(event, 'Perintah hanya dapat dilakukan melalui personal chat.')
+                    reply(event, 'Perintah hanya dapat dilakukan melalui personal chat.')
 
-        elif command == 'selesai':
-                if ID_PENJUAL.count(event.source.userId) == 1:
+        elif command == 'ok':
+                if ADMIN.count(event.source.user_id) == 1:
                     if event.source.type == 'user':
                         for x in arguments_list:
-                            db.selesaiPesanan(int(x), conn.cursor())
-
+                            db.selesaiPesanan(int(x), cur)
                     else:
-                        reply_text(event, 'Perintah hanya dapat dilakukan melalui personal chat.')
-
-    input = event.message.text
-    if input == '/profile':
-        profile = line_bot_api.get_profile(event.source.user_id)
-        profileName = profile.display_name
-        profileId = profile.user_id
-        profileStatus = profile.status_message
-        profileData = 'Nama: ' + profileName + '\n'
-        profileData = profileData + 'Id: ' + profileId + '\n'
-        profileData = profileData + 'Status: ' + profileStatus
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=profileData))
-
-    elif input == '/send':
-        pm('Ufda14dbdecc124e76f3b491104bbcb43','Ada yang mau pesen')
-
-    elif input == '/status':
-        profile = line_bot_api.get_profile(event.source.user_id)
-        profileId = profile.user_id
-         #setup database connection
-        print('Successfully connected')
-        cur = conn.cursor() #create cursor
-        text = db.checkStatus(profileId,cur)
-        pm(profileId, text) #push message text
-        conn.close() #close connection
-        print('Database connection closed.')
-
-    elif input == '/jlhpesan':
-        profile = line_bot_api.get_profile(event.source.user_id)
-        profileId = profile.user_id
-        conn = db.connect()
-        print('Successfully connected')
-        cur = conn.cursor()
-        texts = db.listOrders(cur)
-        for text in texts:
-            pm(profileId, text)
-        conn.close()
-        print('Database connection closed.')
-
-    elif '/ok' in input:    
-        query = input.split(' ')
-        nomorPesanan = int(query[1])
-        conn = db.connect()
-        print('Successfully connected')
-        cur = conn.cursor()
-        db.selesaiPesanan(nomorPesanan,cur)
-        #listing
-        texts = db.listOrders(cur)
-        for text in texts:
-            pm(admin, text)
+                        reply(event, 'Perintah hanya dapat dilakukan melalui personal chat.')
+                texts = db.listOrders(cur)
+                for text in texts:
+                    pm(ADMIN, text)
         conn.commit()
-        conn.close()
+    # input = event.message.text
+    # if input == '/profile':
+    #     profile = line_bot_api.get_profile(event.source.user_id)
+    #     profileName = profile.display_name
+    #     profileId = profile.user_id
+    #     profileStatus = profile.status_message
+    #     profileData = 'Nama: ' + profileName + '\n'
+    #     profileData = profileData + 'Id: ' + profileId + '\n'
+    #     profileData = profileData + 'Status: ' + profileStatus
+    #     line_bot_api.reply_message(
+    #         event.reply_token,
+    #         TextSendMessage(text=profileData))
 
-    else:
-        if '/ok' in input:
-            print (True)
-        else:
-            print (False)
-        reply(event,event.message.text)
+    # elif input == '/send':
+    #     pm('Ufda14dbdecc124e76f3b491104bbcb43','Ada yang mau pesen')
 
+    # elif input == '/status':
+    #     profile = line_bot_api.get_profile(event.source.user_id)
+    #     profileId = profile.user_id
+    #      #setup database connection
+    #     print('Successfully connected')
+    #     cur = cur #create cursor
+    #     text = db.checkStatus(profileId,cur)
+    #     pm(profileId, text) #push message text
+    #     conn.close() #close connection
+    #     print('Database connection closed.')
+
+    # elif input == '/jlhpesan':
+    #     profile = line_bot_api.get_profile(event.source.user_id)
+    #     profileId = profile.user_id
+    #     conn = db.connect()
+    #     print('Successfully connected')
+    #     cur = conn.cursor()
+    #     texts = db.listOrders(cur)
+    #     for text in texts:
+    #         pm(profileId, text)
+    #     conn.close()
+    #     print('Database connection closed.')
+        
 @handler.add(FollowEvent)
 def followReply(event):
     uId = event.source.user_id
@@ -331,18 +312,6 @@ def reply(event, isi): #reply message
 def pm(target_id, isi): #push message
     line_bot_api.push_message(target_id,TextSendMessage(text=isi))
 
-def reply_text(event, message):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=message)
-    )
-
-def push_text(user_id, message):
-    line_bot_api.push_message(
-        user_id,
-        TextSendMessage(text=message)
-    )
-
 def validate_order(arguments_list, last_index):
     if ((RICE_TYPE.count(arguments_list[0]) == 1) and
     (TOPPING_TYPE.count(arguments_list[1]) == 1) and
@@ -352,7 +321,7 @@ def validate_order(arguments_list, last_index):
         return False
 
 def order_mistake(event):
-    reply_text(event, 'Format pesanan salah!')
+    reply(event, 'Format pesanan salah!')
 
 
 if __name__ == "__main__":
