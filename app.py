@@ -206,7 +206,7 @@ def replyText(event):
                         event.source.user_id,
                         arguments_list[0], #nasi
                         arguments_list[1], #topping
-                        ', '.join(arguments_list[2:-2]), #saus
+                        ', '.join(arguments_list[2:-1]), #saus
                         cur
                         )
                     conn.commit()
