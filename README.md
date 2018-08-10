@@ -1,6 +1,8 @@
 # Kantin SR
 <img src="static/main.jpg" width="348" height="600" />
-Mempermudah pemesanan makanan di kantin seni rupa. [Homepage](https://kantinsr.herokuapp.com/).
+Mempermudah pemesanan makanan di kantin seni rupa. 
+
+[Homepage](https://kantinsr.herokuapp.com/)
 
 ## How To Use
 Tutorial ini akan menunjukkan cara penggunaan program ini
