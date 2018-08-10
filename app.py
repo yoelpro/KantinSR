@@ -261,8 +261,7 @@ def replyText(event):
             else:
                 buttons_template = ButtonsTemplate(
                     title='My buttons sample', text='Hello, my buttons', actions=[
-                        MessageAction(label='isi saldo ' + line_bot_api.get_profile(event.source.user_id).display_name,
-                            text=event.message.text + ' ' + event.source.user_id)
+                        MessageAction(label='isi saldo ', text=event.message.text + ' ' + event.source.user_id)
                     ])
                 this_button = TemplateSendMessage(
                     alt_text='Buttons alt text', template=buttons_template)
